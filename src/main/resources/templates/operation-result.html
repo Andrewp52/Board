@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="edges_parts::dochead"></head>
+<body class="bg-light">
+<header th:replace="edges_parts::header"></header>
+<div class="container-xxl">
+    <div class="row mt-3 justify-content-center bg-white rounded shadow-sm">
+        <div class="col-6 text-center" th:if="${result.equals('registered')}">
+            <h3 class="mt-5 mb-3 text-success">Registration success!</h3>
+            <p class="mb-4">Confirmation e-mail was sent. Check your email to proceed registration.</p>
+            <div class="mb-5">
+                <a style="margin-bottom: 5rem" href="/">Back to home</a>
+            </div>
+        </div>
+        <div class="col-6 text-center" th:if="${result.equals('confirmed')}">
+            <h3 class="mt-5 mb-3 text-success">Registration confirmation success!</h3>
+            <p class="mb-4">Now you can sign in.</p>
+            <div class="mb-5">
+                <a style="margin-bottom: 5rem" href="/login">Sign in</a>
+            </div>
+        </div>
+        <div class="col-6 text-center" th:if="${result.equals('error')}">
+            <h3 class="mt-5 mb-3 text-danger">Something went wrong!</h3>
+            <p class="mb-4" th:text="${errMessage}"></p>
+            <div class="mb-5">
+                <a style="margin-bottom: 5rem" href="/">Back to home</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer th:replace="edges_parts::footer"></footer>
+</body>
+</html>
