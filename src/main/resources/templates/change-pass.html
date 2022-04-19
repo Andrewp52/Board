@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="edges_parts::dochead"></head>
+<body>
+<header th:replace="edges_parts::header"></header>
+<div class="container-xxl">
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <h4  class="mt-5 mb-4">Edit profile data</h4>
+            <form th:object="${passChangeDto}" th:action="@{/users/profile/changePass}" th:method="post">
+                <input type="hidden" name="userId" id="userId" th:value="${passChangeDto.getUserId()}">
+                <div class="mb-2">
+                    <label for="oldPass" class="form-label">Old password</label>
+                    <input type="password" class="form-control" id="oldPass" name="oldPass" th:value="${passChangeDto.getOldPass()}">
+                    <span th:if="${#fields.hasErrors('oldPass')}" class="text-danger" >Old pass error</span>
+                </div>
+
+                <div class="mb-2">
+                    <label for="newPass" class="form-label">New password</label>
+                    <input type="password" class="form-control" id="newPass" name="newPass" th:value="${passChangeDto.getNewPass()}">
+                </div>
+
+                <div class="mb-2">
+                    <label for="newPassRepeat" class="form-label">New password</label>
+                    <input type="password" class="form-control" id="newPassRepeat" name="newPassRepeat" th:value="${passChangeDto.getNewPassRepeat()}">
+                    <span th:if="${#fields.hasGlobalErrors()}" class="text-danger">Password repeat doesn't match</span>
+                </div>
+
+                <div class="mt-4">
+                    <button  class="btn btn-lg btn-success btn-block form-control" type="submit" id="submit">Apply changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+<footer th:replace="edges_parts::footer"></footer>
+</body>
+</html>

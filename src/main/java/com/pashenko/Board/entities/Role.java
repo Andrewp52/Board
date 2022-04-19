@@ -1,5 +1,6 @@
 package com.pashenko.Board.entities;
 
+import com.pashenko.Board.entities.dto.RoleDto;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -7,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "roles")
-public class Role implements GrantedAuthority {
+public class Role implements GrantedAuthority, DtoConvertible<RoleDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -65,5 +66,14 @@ public class Role implements GrantedAuthority {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public RoleDto getShortDto(){
+        return new RoleDto(this.id, this.role, this.description);
+    }
+
+    @Override
+    public RoleDto getFullDto() {
+        return getShortDto();
     }
 }

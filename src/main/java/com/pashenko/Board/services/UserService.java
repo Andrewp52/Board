@@ -1,10 +1,16 @@
 package com.pashenko.Board.services;
 
-import com.pashenko.Board.entities.ConfirmToken;
+import com.pashenko.Board.entities.ConfirmationToken;
+import com.pashenko.Board.entities.Role;
 import com.pashenko.Board.entities.User;
+import com.pashenko.Board.entities.dto.PassChangeDto;
+import com.pashenko.Board.entities.dto.UserDto;
+import com.pashenko.Board.entities.dto.UserRegDto;
+import com.pashenko.Board.exceptions.profile.WrongPasswordException;
 import com.pashenko.Board.exceptions.registration.*;
 import com.pashenko.Board.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,18 +45,24 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public User registerNewUser(User user) {
-        if(user.getId() != null){
+    public User registerNewUser(UserRegDto dto) {
+        if(dto.getId() != null){
             throw new UserIdIsNotNullException();
         }
-        userRepo.findByEmail(user.getEmail()).ifPresent(u -> { throw new EmailOccupiedExceprtion(); });
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepo.findByEmail(dto.getEmail()).ifPresent(u -> { throw new EmailOccupiedExceprtion(); });
+        User user = new User(
+                dto.getFirstName(),
+                dto.getLastName(),
+                dto.getPhone(),
+                dto.getEmail(),
+                passwordEncoder.encode(dto.getPassword())
+        );
         user.setEnabled(false);
         return userRepo.save(user);
     }
 
     public void confirmRegistration(String tokenStr){
-        ConfirmToken token = tokenService.getTokenByUUID(tokenStr);
+        ConfirmationToken token = tokenService.getTokenByUUID(tokenStr);
         if(token.getExpirationDate().isBefore(LocalDateTime.now())){
             throw new ConfirmTokenExpiredException();
         }
@@ -61,15 +73,43 @@ public class UserService implements UserDetailsService {
         tokenService.delete(token);
     }
 
-    public String getConfirmToken(User user){
+    public ConfirmationToken getConfirmToken(User user){
         return this.tokenService.generateAndGetConfirmToken(user);
     }
 
     @Transactional
     public void deleteExpiredTokensAndUsers() {
         tokenService.getExpiredTokens().forEach(t -> {
-            userRepo.delete(t.getUser());
+            if(!t.getUser().getEnabled()){      // Account is not activated
+                userRepo.delete(t.getUser());
+            }
             tokenService.delete(t);
         });
+    }
+
+    public User updateProfile(User caller, UserDto newProfile) {
+        if(!caller.getId().equals(newProfile.getId())){
+            if(!isUserAdmin(caller)){
+                throw new AccessDeniedException("Insufficient rights to edit user's account");
+            }
+        }
+        User toChange = userRepo.getById(newProfile.getId());
+        toChange.setFirstName(newProfile.getFirstName());
+        toChange.setLastName(newProfile.getLastName());
+        toChange.setPhone(newProfile.getPhone());
+        toChange.setEmail(newProfile.getEmail());
+        return userRepo.save(toChange);
+    }
+
+    public void changeUserPassword(User caller, PassChangeDto dto){
+        if(!passwordEncoder.matches(dto.getOldPass(), caller.getPassword())){
+            throw new WrongPasswordException();
+        }
+        caller.setPassword(passwordEncoder.encode(dto.getNewPass()));
+        userRepo.save(caller);
+    }
+
+    private boolean isUserAdmin(User user){
+        return user.getRoles().stream().map(Role::getRole).anyMatch(s -> s.equals("ADMIN"));
     }
 }

@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<p th:text="#{email.template.greetings} + ${token.getUser().getFirstName} + '!'"></p>
+<p th:text="#{email.template.registration.confirm.message}"></p>
+<a th:href="'http://localhost:8080/signup/confirm?token=' + ${token.getUuid()}" th:text="#{email.template.registration.confirm.link.text}"></a>
+</body>
+</html>

@@ -8,35 +8,37 @@
         <div class="col-4 mt-5">
             <form class="form-signin" method="post" th:action="@{/authenticateTheUser}">
 
-                <h3 class="form-signin-heading">Please sign in</h3>
+                <h3 class="form-signin-heading" th:text="#{login.form.heading}"></h3>
 
                 <div class="form-group">
                     <div class="col-xs-15">
                         <div>
                             <div th:if="${param.error} != null">
                                 <div class="alert alert-danger col-xs-offset-1 col-xs-10">
-                                    Invalid username and password.
+                                    <p th:text="#{login.error}"></p>
                                 </div>
                             </div>
                             <div th:if="${param.logout} != null">
                                 <div class="alert alert-success col-xs-offset-1 col-xs-10">
-                                    You have been logged out.
+                                    <p th:text="#{login.logout}"></p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <p>
-                    <label for="username" class="sr-only">Username</label>
+                    <label for="username" class="sr-only" th:text="#{login.form.label.email}"></label>
                     <input type="text" id="username" name="username" class="form-control" placeholder="Username or e-mail" required autofocus>
                 </p>
                 <p>
-                    <label for="password" class="sr-only">Password</label>
+                    <label for="password" class="sr-only" th:text="#{login.form.label.password}"></label>
                     <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
                 </p>
-                <div class="mt-4">
-                    <button class="btn btn-lg btn-success btn-block form-control" type="submit">Sign in</button>
-
+                <div class="mt-4 mb-3">
+                    <button class="btn btn-lg btn-success btn-block form-control" type="submit" th:text="#{login.form.submit}"></button>
+                </div>
+                <div class="text-center">
+                    <a th:href="@{/login/restorePass}" th:text="#{login.form.passrestore}"></a>
                 </div>
             </form>
         </div>

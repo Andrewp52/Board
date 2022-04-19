@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="edges_parts::dochead"></head>
+<body>
+<header th:replace="edges_parts::header"></header>
+<div class="container-xxl">
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <h4  class="mt-5 mb-4">Edit profile data</h4>
+            <form th:object="${userDto}" th:action="@{/users/profile}" th:method="post">
+                <input type="hidden" name="id" id="id" th:value="${userDto.getId()}">
+                <div class="mb-2">
+                    <label for="firstName" class="form-label">First name</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" th:value="${userDto.getFirstName()}">
+                </div>
+
+                <div class="mb-2">
+                    <label for="lastName" class="form-label">Last name</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" th:value="${userDto.getLastName()}">
+                </div>
+
+                <div class="mb-2">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" th:value="${userDto.getPhone()}">
+                </div>
+
+                <div class="mb-2">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" th:value="${userDto.getEmail()}">
+                </div>
+
+                <div class="mt-4">
+                    <button  class="btn btn-lg btn-success btn-block form-control" type="submit" id="submit">Apply changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+<footer th:replace="edges_parts::footer"></footer>
+</body>
+</html>

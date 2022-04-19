@@ -1,6 +1,6 @@
 package com.pashenko.Board.services;
 
-import com.pashenko.Board.entities.ConfirmToken;
+import com.pashenko.Board.entities.ConfirmationToken;
 import com.pashenko.Board.entities.User;
 import com.pashenko.Board.exceptions.registration.ConfirmTokenNotFoundException;
 import com.pashenko.Board.repositories.ConfirmTokenRepository;
@@ -25,31 +25,32 @@ public class ConfirmTokenService {
         this.repository = repository;
     }
 
-    public String generateAndGetConfirmToken(User user){
-        ConfirmToken token = repository.save(
-                new ConfirmToken(
+    public ConfirmationToken generateAndGetConfirmToken(User user){
+        return repository.save(
+                new ConfirmationToken(
                         user,
                         UUID.randomUUID().toString(),
                         LocalDateTime.now().plus(expires, ChronoUnit.MINUTES)
                 )
         );
-        return token.getUuid();
     }
 
-    public List<ConfirmToken> getExpiredTokens(){
+    public List<ConfirmationToken> getExpiredTokens(){
         return repository.findAllByExpirationDateBefore(LocalDateTime.now())
                 .orElseGet(Collections::emptyList);
     }
 
-    public void delete(ConfirmToken token) {
+    public void delete(ConfirmationToken token) {
         repository.delete(token);
     }
 
-    public ConfirmToken getTokenByUUID(String uuid) {
+    public ConfirmationToken getTokenByUUID(String uuid) {
         return repository.findByUuid(uuid).orElseThrow(ConfirmTokenNotFoundException::new);
     }
 
-    public void save(ConfirmToken token) {
+    public void save(ConfirmationToken token) {
         repository.save(token);
     }
+
+
 }

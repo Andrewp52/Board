@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "reg_tokens")
-public class ConfirmToken {
+@Table(name = "confirm_tokens")
+public class ConfirmationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -20,13 +20,13 @@ public class ConfirmToken {
     @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
 
-    public ConfirmToken(User user, String uuid, LocalDateTime expirationDate) {
+    public ConfirmationToken(User user, String uuid, LocalDateTime expirationDate) {
         this.user = user;
         this.uuid = uuid;
         this.expirationDate = expirationDate;
     }
 
-    public ConfirmToken() {
+    public ConfirmationToken() {
     }
 
     public Long getId() {

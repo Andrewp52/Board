@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="edges_parts::dochead"></head>
+<body class="bg-light">
+<header th:replace="edges_parts::header"></header>
+<nav th:replace="edges_parts::profileNav(currentUrl = ${currentUrl})"></nav>
+<div class="container-xxl">
+    <div class="row mt-3 justify-content-center bg-white rounded shadow-sm">
+        <h4 class=" mt-5 mb-4 text-center">User's profile data</h4>
+        <div class="col-6">
+            <table class="table table-sm">
+                <tbody>
+                <tr>
+                    <td>First name</td><td th:text="${userDto.getFirstName()}"></td>
+                </tr>
+                <tr>
+                    <td>Last name</td><td th:text="${userDto.getLastName()}"></td>
+                </tr>
+                <tr>
+                    <td>Phone</td><td th:text="${userDto.getPhone()}"></td>
+                </tr>
+                <tr>
+                    <td>Email address</td><td th:text="${userDto.getEmail()}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="row justify-content-center mb-4">
+                <div class="col-6 text-center">
+                    <a class="me-3" th:href="@{/users/profile/edit}">Edit profile</a>
+                    <a class="text-danger" th:href="@{/users/profile/changePass}">Change password</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer th:replace="edges_parts::footer"></footer>
+</body>
+</html>

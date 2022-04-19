@@ -6,41 +6,47 @@
 <div class="container-xxl">
     <div class="row justify-content-center">
         <div class="col-4">
-            <h3  class="mt-5 mb-4">Register new user</h3>
-            <form th:object="${user}" th:action="@{/signup}" th:method="post">
+            <h3  class="mt-5 mb-4" th:text="#{register.form.heading}"></h3>
+            <form th:object="${userRegDto}" th:action="@{/signup}" th:method="post">
 
                 <div class="mb-2">
-                    <label for="firstName" class="form-label">First name</label>
-                    <input type="text" class="form-control" id="firstName" name="firstName" th:value="${user.getFirstName()}" placeholder="John">
+                    <label for="firstName" class="form-label" th:text="#{register.form.firstname}"></label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" th:value="${userRegDto.getFirstName()}" placeholder="John">
                     <span th:if="${#fields.hasErrors('firstName')}" class="text-danger">Name error</span>
                 </div>
 
                 <div class="mb-2">
-                    <label for="lastName" class="form-label">Last name</label>
-                    <input type="text" class="form-control" id="lastName" name="lastName" th:value="${user.getLastName()}" placeholder="Smith">
+                    <label for="lastName" class="form-label" th:text="#{register.form.lastname}"></label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" th:value="${userRegDto.getLastName()}" placeholder="Smith">
                     <span th:if="${#fields.hasErrors('lastName')}" class="text-danger">Last name error</span>
                 </div>
 
                 <div class="mb-2">
-                    <label for="phone" class="form-label">Phone</label>
-                    <input type="text" class="form-control" id="phone" name="phone" th:value="${user.getPhone()}" placeholder="+1 800 555 55 55">
+                    <label for="phone" class="form-label" th:text="#{register.form.phone}"></label>
+                    <input type="text" class="form-control" id="phone" name="phone" th:value="${userRegDto.getPhone()}" placeholder="+1 800 555 55 55">
                     <span th:if="${#fields.hasErrors('phone')}" class="text-danger">Phone error</span>
                 </div>
 
                 <div class="mb-2">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="email" name="email" th:value="${user.getEmail()}"placeholder="name@example.com">
+                    <label for="email" class="form-label" th:text="#{register.form.email}"></label>
+                    <input type="email" class="form-control" id="email" name="email" th:value="${userRegDto.getEmail()}" placeholder="name@example.com">
                     <span th:if="${#fields.hasErrors('email')}" class="text-danger">Email error</span>
                 </div>
 
                 <div class="mb-2">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" th:value="${user.getPassword()}">
+                    <label for="password" class="form-label" th:text="#{register.form.password}"></label>
+                    <input type="password" class="form-control" id="password" name="password" th:value="${userRegDto.getPassword()}">
                     <span th:if="${#fields.hasErrors('password')}" class="text-danger">Password error</span>
                 </div>
 
+<!--                <div class="mb-2">-->
+<!--                    <label for="passwordRepeat" class="form-label" th:text="#{register.form.passwordrepeat}"></label>-->
+<!--                    <input type="password" class="form-control" id="passwordRepeat" name="password" th:value="${userRegDto.getPassword()}">-->
+<!--                    <span th:if="${#fields.hasErrors('password')}" class="text-danger">Password error</span>-->
+<!--                </div>-->
+
                 <div class="mt-4">
-                    <button  class="btn btn-lg btn-success btn-block form-control" type="submit" id="submit">Sign up</button>
+                    <button  class="btn btn-lg btn-success btn-block form-control" type="submit" id="submit" th:text="#{register.form.submit}"></button>
                 </div>
             </form>
         </div>

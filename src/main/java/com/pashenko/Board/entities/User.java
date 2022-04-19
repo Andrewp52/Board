@@ -1,48 +1,40 @@
 package com.pashenko.Board.entities;
 
-import com.pashenko.Board.validators.UniqueEmail;
+import com.pashenko.Board.entities.dto.UserDto;
+import com.pashenko.Board.entities.dto.UserRegDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements UserDetails, DtoConvertible<UserDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "first_name")
-    @NotBlank(message = "First name is mandatory")
-    @Size(min=2, max=30)
+    @Column(name = "first_name", nullable = false, length = 30)
     private String firstName;
 
-    @Column(name = "last_name")
-    @NotBlank(message = "Last name is mandatory")
-    @Size(min=2, max=30)
+    @Column(name = "last_name", nullable = false, length = 30)
     private String lastName;
 
-    @Column(name = "phone")
-    @NotBlank(message = "Phone is mandatory")
+    @Column(name = "phone", nullable = false, length = 20)
     private String phone;
 
-    @Column(name = "email")
-    @NotBlank(message = "E-mail is mandatory")
-    @UniqueEmail
+    @Column(name = "email", nullable = false, length = 30, unique = true)
     private String email;
 
-    @Column(name = "password")
-    @NotBlank(message = "Password is mandatory")
-    @Size(min=3, max = 30)
+    @Column(name = "password", nullable = false, length = 30)
+    @Size(min=3, max = 100)
     private String password;
 
-    @Column(name = "enabled")
+    @Column(name = "enabled", nullable = false)
     private Boolean isEnabled;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -53,6 +45,17 @@ public class User implements UserDetails {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Offer> offers;
+
+    public User() {
+    }
+
+    public User(String firstName, String lastName, String phone, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+        this.email = email;
+        this.password = password;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -155,5 +158,20 @@ public class User implements UserDetails {
 
     public void setOffers(List<Offer> offers) {
         this.offers = offers;
+    }
+
+    public UserDto getShortDto(){
+        return new UserDto(this.id, this.firstName,this.lastName,this.phone,this.email);
+    }
+
+    public UserDto getFullDto(){
+        return new UserRegDto(
+                this.id,
+                this.firstName,
+                this.lastName,
+                this.phone,this.email,
+                this.password,
+                this.roles.stream().map(Role::getShortDto).collect(Collectors.toList())
+                );
     }
 }
