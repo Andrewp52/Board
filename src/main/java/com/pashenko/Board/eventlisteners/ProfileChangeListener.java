@@ -37,10 +37,7 @@ public class ProfileChangeListener implements ApplicationListener<OnProfileChang
                 .mailFrom(this.from)
                 .rcptTo(user.getEmail())
                 .subject("Profile data changed")
-                .body("""
-                      <h4>Hello %s!</h4>
-                      <p>Your profile data has been changed.</p>
-                      """.formatted(user.getFirstName()))
+                .body("")
                 .build();
         mailService.sendMessage(message);
     }
