@@ -2,6 +2,7 @@ package com.pashenko.Board.entities.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -11,6 +12,9 @@ public class UserRegDto extends UserDto{
     @NotBlank
     @Size(min = 3, max = 30)
     private String password;
+    @NotBlank
+    @Size(min = 3, max = 30)
+    private String passwordRepeat;
     private List<RoleDto> roles;
 
     public UserRegDto(Long id, String firstName, String lastName, String phone, String email, String password, List<RoleDto> roles) {
@@ -20,5 +24,10 @@ public class UserRegDto extends UserDto{
     }
 
     public UserRegDto() {
+    }
+
+    @AssertTrue()
+    public boolean isPasswordsMatches(){
+        return password == null || password.equals(passwordRepeat);
     }
 }

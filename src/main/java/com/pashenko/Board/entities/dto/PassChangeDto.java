@@ -1,13 +1,12 @@
 package com.pashenko.Board.entities.dto;
 
-import com.pashenko.Board.PasswordMatch;
 import lombok.Data;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
-@PasswordMatch
 public class PassChangeDto {
     private Long userId;
     private String oldPass;
@@ -22,5 +21,10 @@ public class PassChangeDto {
 
     public PassChangeDto(Long userId) {
         this.userId = userId;
+    }
+
+    @AssertTrue
+    public boolean isPasswordsMatch(){
+        return newPass.equals(newPassRepeat);
     }
 }

@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<p th:text="#{email.template.greetings} + ${user.getFirstName()} + '!'"></p>
+<p th:text="#{email.template.profile.changed.message} + ' ' + ${date}"></p>
+</body>
+</html>

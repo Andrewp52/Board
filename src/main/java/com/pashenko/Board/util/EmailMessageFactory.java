@@ -4,6 +4,7 @@ import com.pashenko.Board.entities.EmailMessage;
 import com.pashenko.Board.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -17,20 +18,25 @@ public class EmailMessageFactory {
     private String from;
     @Autowired
     private TemplateEngine engine;
+    @Autowired
+    ResourceBundleMessageSource messageSource;
 
     public EmailMessage getPasswordResetMessage(User user, Map<String, Object> model, Locale locale){
         String body = getMessageBody("emails/password-reset", model, locale);
-        return assemblyMessage(user, "Password reset", body);
+        String subject = messageSource.getMessage("email.template.password.reset.subject", null, locale);
+        return assemblyMessage(user, subject, body);
     }
 
     public EmailMessage getAccountActivateMessage(User user, Map<String, Object> model, Locale locale){
         String body = getMessageBody("emails/activate-profile", model, locale);
-        return assemblyMessage(user, "Profile activation", body);
+        String subject = messageSource.getMessage("email.template.registration.confirm.subject", null, locale);
+        return assemblyMessage(user, subject, body);
     }
 
-    public EmailMessage getProfileChangedMessage(User user, Locale locale){
-        String body = getMessageBody("emails/profile-changed", locale);
-        return assemblyMessage(user, "Profile changed", body);
+    public EmailMessage getProfileChangedMessage(User user, Map<String, Object> model, Locale locale){
+        String body = getMessageBody("emails/profile-changed", model, locale);
+        String subject = messageSource.getMessage("email.template.profile.changed.subject", null, locale);
+        return assemblyMessage(user, subject, body);
     }
 
     private EmailMessage assemblyMessage(User user, String subject, String body){
@@ -45,10 +51,4 @@ public class EmailMessageFactory {
     private String getMessageBody(String template, Map<String, Object> model, Locale locale){
         return engine.process(template, new Context(locale, model));
     }
-    
-    private String getMessageBody(String template, Locale locale){
-        return engine.process(template, new Context(locale));
-    }
-
-
 }

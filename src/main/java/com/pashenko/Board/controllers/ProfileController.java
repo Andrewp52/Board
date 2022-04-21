@@ -6,30 +6,30 @@ import com.pashenko.Board.entities.dto.UserDto;
 import com.pashenko.Board.events.OnProfileChangeComplete;
 import com.pashenko.Board.exceptions.profile.WrongPasswordException;
 import com.pashenko.Board.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.pashenko.Board.util.OperationResultModelFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class ProfileController {
     private final UserService userService;
     private final ApplicationEventPublisher eventPublisher;
-
-    @Autowired
-    public ProfileController(UserService userService, ApplicationEventPublisher eventPublisher) {
-        this.userService = userService;
-        this.eventPublisher = eventPublisher;
-    }
+    private final OperationResultModelFactory modelFactory;
 
     @GetMapping("/profile")
     @Secured("ROLE_USER")
@@ -57,7 +57,7 @@ public class ProfileController {
 
     @PostMapping("/profile/changePass")
     @Secured("ROLE_USER")
-    String updateUserPassword(@Valid @ModelAttribute PassChangeDto dto, BindingResult bindingResult, Authentication authentication, Model model){
+    String updateUserPassword(@Valid @ModelAttribute PassChangeDto dto, BindingResult bindingResult, Authentication authentication, Model model, HttpServletRequest request){
         if(bindingResult.hasErrors()){
             model.addAttribute(dto);
             return "change-pass";
@@ -70,9 +70,7 @@ public class ProfileController {
             model.addAttribute(dto);
             return "change-pass";
         }
-        model.addAttribute("result", "passChanged");
-        model.addAttribute("label", "Success");
-        model.addAttribute("message", "Password changed!");
+        model.addAllAttributes(this.modelFactory.getPasswordChangedModel(request.getLocale()));
         return "operation-result";
     }
 
@@ -82,16 +80,18 @@ public class ProfileController {
             @Valid @ModelAttribute(name = "userDto") UserDto newProfile,
             BindingResult bindingResult,
             Authentication authentication,
-            Model model
+            Model model,
+            HttpServletRequest request
     ){
         if(bindingResult.hasErrors()){
             model.addAttribute("user", newProfile);
             return "profile-edit";
         }
         User caller = (User) authentication.getPrincipal();
-        User changed = userService.updateProfile(caller, newProfile);
-        eventPublisher.publishEvent(new OnProfileChangeComplete(changed));
-        model.addAttribute("user", changed.getFullDto());
+        caller = userService.updateProfile(caller, newProfile);
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(caller, authentication.getCredentials(), caller.getAuthorities()));
+        eventPublisher.publishEvent(new OnProfileChangeComplete(caller, request.getLocale()));
+        model.addAttribute("user", caller.getFullDto());
         return "profile";
     }
 

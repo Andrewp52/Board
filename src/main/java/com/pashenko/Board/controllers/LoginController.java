@@ -5,7 +5,8 @@ import com.pashenko.Board.entities.dto.UserRegDto;
 import com.pashenko.Board.events.OnSignUpComplete;
 import com.pashenko.Board.exceptions.registration.*;
 import com.pashenko.Board.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.pashenko.Board.util.OperationResultModelFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,15 +18,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
+@RequiredArgsConstructor
 public class LoginController {
-    @Autowired
-    ApplicationEventPublisher eventPublisher;
-    private UserService userService;
-
-    @Autowired
-    public LoginController(UserService userService) {
-        this.userService = userService;
-    }
+    private final ApplicationEventPublisher eventPublisher;
+    private final UserService userService;
+    private final OperationResultModelFactory modelFactory;
 
     @GetMapping("/login")
     String getLoginForm(){
@@ -39,11 +36,9 @@ public class LoginController {
     }
 
     @GetMapping("/signup/confirm")
-    String confirmUserRegistration(@RequestParam(name = "token") String token, Model model){
-        userService.confirmRegistration(token);
-        model.addAttribute("result", "confirmed");
-        model.addAttribute("label", "Success!");
-        model.addAttribute("message", "Account activated.");
+    String confirmUserRegistration(@RequestParam(name = "token") String token, Model model, HttpServletRequest request){
+        this.userService.confirmRegistration(token);
+        model.addAllAttributes(this.modelFactory.getSignupConfirmedModel(request.getLocale()));
         return "operation-result";
     }
 
@@ -59,11 +54,9 @@ public class LoginController {
             return "signup";
         }
         try{
-            User registered = userService.registerNewUser(dto);
-            model.addAttribute("result", "registered");
-            model.addAttribute("label", "Almost done!");
-            model.addAttribute("message", "Confirmation e-mail was sent. Check your email to proceed registration.");
-            eventPublisher.publishEvent(new OnSignUpComplete(registered, request.getLocale()));
+            User registered = this.userService.registerNewUser(dto);
+            model.addAllAttributes(this.modelFactory.getSignupCompleteModel(request.getLocale()));
+            this.eventPublisher.publishEvent(new OnSignUpComplete(registered, request.getLocale()));
             return "operation-result";
         } catch (EmailOccupiedExceprtion e){
             bindingResult.addError(new FieldError(dto.getClass().getSimpleName(), "email", "E-mail is already registered"));

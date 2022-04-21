@@ -21,7 +21,11 @@ public class PasswordChangeListener implements ApplicationListener<OnPasswordRes
     private final EmailMessageFactory messageFactory;
 
     @Autowired
-    public PasswordChangeListener(UserService userService, SendMailService mailService, EmailMessageFactory messageFactory) {
+    public PasswordChangeListener(
+            UserService userService,
+            SendMailService mailService,
+            EmailMessageFactory messageFactory
+    ) {
         this.userService = userService;
         this.mailService = mailService;
         this.messageFactory = messageFactory;
@@ -32,7 +36,6 @@ public class PasswordChangeListener implements ApplicationListener<OnPasswordRes
     public void onApplicationEvent(OnPasswordResetRequested event) {
         User user = (User) event.getSource();
         Map<String, Object> model = new HashMap<>();
-
         model.put("token", userService.getConfirmToken((User) event.getSource()));
         EmailMessage messageBody = messageFactory.getPasswordResetMessage(user, model, event.getLocale());
 

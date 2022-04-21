@@ -11,7 +11,11 @@ public class MessageSourceConfig {
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setFallbackToSystemLocale(false);
-        messageSource.setBasenames("bundles/loginregister", "bundles/emailtemplates");
+        messageSource.setBasenames(
+                "bundles/loginregister",
+                "bundles/emailtemplates",
+                "bundles/formserrors",
+                "bundles/operationresults");
         return messageSource;
     }
 }
